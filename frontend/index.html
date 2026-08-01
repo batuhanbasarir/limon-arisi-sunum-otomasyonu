@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <title>Limon Arısı — Sunum Otomasyonu</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <img src="/brand-assets/limon_arisi_logo.png" alt="" class="topbar-logo" />
+    <h1>Limon Arısı — Aylık Sunum Otomasyonu</h1>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <main>
+    <section class="panel">
+      <label>
+        Marka
+        <select id="brand"></select>
+      </label>
+      <label>
+        Ay
+        <input id="month" type="text" placeholder="Ağustos" />
+      </label>
+      <label>
+        Yıl
+        <input id="year" type="number" placeholder="2026" />
+      </label>
+    </section>
+
+    <section id="items"></section>
+
+    <button id="add-item" type="button" class="secondary">+ İçerik ekle</button>
+
+    <div class="actions">
+      <button id="generate" type="button">Sunumu Oluştur</button>
+      <span id="status"></span>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

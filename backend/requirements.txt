@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-pptx
+lxml
+Pillow
+imageio-ffmpeg
+anthropic
+pydantic
+python-dotenv

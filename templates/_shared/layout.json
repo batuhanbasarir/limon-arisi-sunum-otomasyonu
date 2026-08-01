@@ -1,0 +1,9 @@
+{
+  "logo_big":   {"left_in": 3.887, "top_in": 1.184, "width_in": 5.434, "height_in": 3.514},
+  "logo_small": {"left_in": 0.417, "top_in": 0.281, "width_in": 1.683, "height_in": 1.089},
+  "caption": {"left_in": 0.38, "top_in": 1.5, "width_in": 5.57, "height_in": 4.1},
+  "media_1img":   {"left_in": 7.48, "top_in": 1.78, "width_in": 3.46, "height_in": 4.32},
+  "media_2img_left":  {"left_in": 7.2,  "top_in": 1.78, "width_in": 2.7, "height_in": 4.32},
+  "media_2img_right": {"left_in": 10.2, "top_in": 1.78, "width_in": 2.7, "height_in": 4.32},
+  "media_video":   {"left_in": 8.47, "top_in": 1.84, "width_in": 2.98, "height_in": 5.30}
+}

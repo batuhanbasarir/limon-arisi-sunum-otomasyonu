@@ -1,0 +1,373 @@
+<fragment>
+  <p:grpSp xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+    <p:nvGrpSpPr>
+      <p:cNvPr id="8" name="Grup 7">
+        <a:extLst>
+          <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+            <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{1C1C53CD-0435-1C01-B368-4A6AB0598719}"/>
+          </a:ext>
+        </a:extLst>
+      </p:cNvPr>
+      <p:cNvGrpSpPr/>
+      <p:nvPr/>
+    </p:nvGrpSpPr>
+    <p:grpSpPr>
+      <a:xfrm>
+        <a:off x="0" y="5740186"/>
+        <a:ext cx="2671683" cy="1117814"/>
+        <a:chOff x="3430417" y="2977043"/>
+        <a:chExt cx="3830236" cy="1605915"/>
+      </a:xfrm>
+    </p:grpSpPr>
+    <p:grpSp>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="9" name="Grup 8">
+          <a:extLst>
+            <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+              <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{F952841B-42DF-7838-3479-B3DF731AD4CF}"/>
+            </a:ext>
+          </a:extLst>
+        </p:cNvPr>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="3430417" y="2977043"/>
+          <a:ext cx="3830236" cy="1605915"/>
+          <a:chOff x="0" y="15069"/>
+          <a:chExt cx="4119" cy="1769"/>
+        </a:xfrm>
+      </p:grpSpPr>
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="10" name="Dikd&#246;rtgen 9">
+            <a:extLst>
+              <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+                <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{EFB4C180-2360-6876-14DF-76CA7382219C}"/>
+              </a:ext>
+            </a:extLst>
+          </p:cNvPr>
+          <p:cNvSpPr/>
+          <p:nvPr/>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="0" y="15069"/>
+            <a:ext cx="4100" cy="1750"/>
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+          <a:noFill/>
+          <a:ln>
+            <a:noFill/>
+          </a:ln>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr spcFirstLastPara="1" wrap="square" lIns="91425" tIns="91425" rIns="91425" bIns="91425" anchor="ctr" anchorCtr="0">
+            <a:noAutofit/>
+          </a:bodyPr>
+          <a:lstStyle/>
+          <a:p>
+            <a:r>
+              <a:rPr lang="en-US" sz="1100">
+                <a:effectLst/>
+                <a:latin typeface="Times New Roman" panose="02020603050405020304" pitchFamily="18" charset="0"/>
+                <a:ea typeface="Times New Roman" panose="02020603050405020304" pitchFamily="18" charset="0"/>
+              </a:rPr>
+              <a:t>&#160;</a:t>
+            </a:r>
+            <a:endParaRPr lang="tr-TR" sz="1100">
+              <a:effectLst/>
+              <a:latin typeface="Times New Roman" panose="02020603050405020304" pitchFamily="18" charset="0"/>
+              <a:ea typeface="Times New Roman" panose="02020603050405020304" pitchFamily="18" charset="0"/>
+            </a:endParaRPr>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="11" name="Serbest Form: &#350;ekil 10">
+            <a:extLst>
+              <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+                <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{1323D8E9-3FE7-994C-0F7A-37E0AD5AF08E}"/>
+              </a:ext>
+            </a:extLst>
+          </p:cNvPr>
+          <p:cNvSpPr/>
+          <p:nvPr/>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="2187" y="15391"/>
+            <a:ext cx="92" cy="80"/>
+          </a:xfrm>
+          <a:custGeom>
+            <a:avLst/>
+            <a:gdLst/>
+            <a:ahLst/>
+            <a:cxnLst/>
+            <a:rect l="l" t="t" r="r" b="b"/>
+            <a:pathLst>
+              <a:path w="92" h="80" extrusionOk="0">
+                <a:moveTo>
+                  <a:pt x="69" y="0"/>
+                </a:moveTo>
+                <a:lnTo>
+                  <a:pt x="23" y="0"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="0" y="40"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="23" y="80"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="69" y="80"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="92" y="40"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="69" y="0"/>
+                </a:lnTo>
+                <a:close/>
+              </a:path>
+            </a:pathLst>
+          </a:custGeom>
+          <a:solidFill>
+            <a:srgbClr val="FDE000"/>
+          </a:solidFill>
+          <a:ln>
+            <a:noFill/>
+          </a:ln>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr spcFirstLastPara="1" wrap="square" lIns="91425" tIns="91425" rIns="91425" bIns="91425" anchor="ctr" anchorCtr="0">
+            <a:noAutofit/>
+          </a:bodyPr>
+          <a:lstStyle/>
+          <a:p>
+            <a:endParaRPr lang="tr-TR"/>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+      <p:pic>
+        <p:nvPicPr>
+          <p:cNvPr id="12" name="Shape 23">
+            <a:extLst>
+              <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+                <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{6D092795-4424-A529-6989-5E0BA7A2857F}"/>
+              </a:ext>
+            </a:extLst>
+          </p:cNvPr>
+          <p:cNvPicPr preferRelativeResize="0"/>
+          <p:nvPr/>
+        </p:nvPicPr>
+        <p:blipFill rotWithShape="1">
+          <a:blip r:embed="{{IMG:badge_corner}}">
+            <a:alphaModFix/>
+          </a:blip>
+          <a:srcRect/>
+          <a:stretch/>
+        </p:blipFill>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="0" y="15069"/>
+            <a:ext cx="4075" cy="1769"/>
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+          <a:noFill/>
+          <a:ln>
+            <a:noFill/>
+          </a:ln>
+        </p:spPr>
+      </p:pic>
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="13" name="Serbest Form: &#350;ekil 12">
+            <a:extLst>
+              <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+                <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{561B89C8-18AD-F158-4F9F-BCEBB221F1F4}"/>
+              </a:ext>
+            </a:extLst>
+          </p:cNvPr>
+          <p:cNvSpPr/>
+          <p:nvPr/>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="4094" y="16610"/>
+            <a:ext cx="25" cy="193"/>
+          </a:xfrm>
+          <a:custGeom>
+            <a:avLst/>
+            <a:gdLst/>
+            <a:ahLst/>
+            <a:cxnLst/>
+            <a:rect l="l" t="t" r="r" b="b"/>
+            <a:pathLst>
+              <a:path w="25" h="193" extrusionOk="0">
+                <a:moveTo>
+                  <a:pt x="8" y="2"/>
+                </a:moveTo>
+                <a:lnTo>
+                  <a:pt x="7" y="0"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="2" y="0"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="0" y="2"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="0" y="6"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="2" y="8"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="7" y="8"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="8" y="6"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="8" y="4"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="8" y="2"/>
+                </a:lnTo>
+                <a:close/>
+                <a:moveTo>
+                  <a:pt x="25" y="176"/>
+                </a:moveTo>
+                <a:lnTo>
+                  <a:pt x="21" y="171"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="9" y="171"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="4" y="176"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="4" y="188"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="9" y="192"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="21" y="192"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="25" y="188"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="25" y="182"/>
+                </a:lnTo>
+                <a:lnTo>
+                  <a:pt x="25" y="176"/>
+                </a:lnTo>
+                <a:close/>
+              </a:path>
+            </a:pathLst>
+          </a:custGeom>
+          <a:solidFill>
+            <a:srgbClr val="FDE000"/>
+          </a:solidFill>
+          <a:ln>
+            <a:noFill/>
+          </a:ln>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr spcFirstLastPara="1" wrap="square" lIns="91425" tIns="91425" rIns="91425" bIns="91425" anchor="ctr" anchorCtr="0">
+            <a:noAutofit/>
+          </a:bodyPr>
+          <a:lstStyle/>
+          <a:p>
+            <a:endParaRPr lang="tr-TR"/>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+    </p:grpSp>
+  </p:grpSp>
+  <p:pic xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+    <p:nvPicPr>
+      <p:cNvPr id="14" name="Shape 66">
+        <a:extLst>
+          <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+            <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{C01F0EFF-AB89-DE30-1F22-277B8B565DFA}"/>
+          </a:ext>
+        </a:extLst>
+      </p:cNvPr>
+      <p:cNvPicPr/>
+      <p:nvPr/>
+    </p:nvPicPr>
+    <p:blipFill rotWithShape="1">
+      <a:blip r:embed="{{IMG:corp_logo}}">
+        <a:alphaModFix/>
+      </a:blip>
+      <a:srcRect/>
+      <a:stretch/>
+    </p:blipFill>
+    <p:spPr>
+      <a:xfrm>
+        <a:off x="9573104" y="53092"/>
+        <a:ext cx="2618896" cy="1137161"/>
+      </a:xfrm>
+      <a:prstGeom prst="rect">
+        <a:avLst/>
+      </a:prstGeom>
+      <a:noFill/>
+      <a:ln>
+        <a:noFill/>
+      </a:ln>
+    </p:spPr>
+  </p:pic>
+  <p:sp xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+    <p:nvSpPr>
+      <p:cNvPr id="2" name="Metin kutusu 1">
+        <a:extLst>
+          <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+            <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{40EA6988-DF10-E8C9-AE63-1ADBD025ADAE}"/>
+          </a:ext>
+        </a:extLst>
+      </p:cNvPr>
+      <p:cNvSpPr txBox="1"/>
+      <p:nvPr/>
+    </p:nvSpPr>
+    <p:spPr>
+      <a:xfrm>
+        <a:off x="3385751" y="3079303"/>
+        <a:ext cx="6292060" cy="830997"/>
+      </a:xfrm>
+      <a:prstGeom prst="rect">
+        <a:avLst/>
+      </a:prstGeom>
+      <a:noFill/>
+    </p:spPr>
+    <p:txBody>
+      <a:bodyPr wrap="square" rtlCol="0">
+        <a:spAutoFit/>
+      </a:bodyPr>
+      <a:lstStyle/>
+      <a:p>
+        <a:r>
+          <a:rPr lang="tr-TR" sz="4800" b="1" dirty="0">
+            <a:latin typeface="Arial" panose="020B0604020202020204" pitchFamily="34" charset="0"/>
+            <a:cs typeface="Arial" panose="020B0604020202020204" pitchFamily="34" charset="0"/>
+          </a:rPr>
+          <a:t>TE&#350;EKK&#220;RLER</a:t>
+        </a:r>
+        <a:endParaRPr lang="tr-TR" b="1" dirty="0">
+          <a:latin typeface="Arial" panose="020B0604020202020204" pitchFamily="34" charset="0"/>
+          <a:cs typeface="Arial" panose="020B0604020202020204" pitchFamily="34" charset="0"/>
+        </a:endParaRPr>
+      </a:p>
+    </p:txBody>
+  </p:sp>
+</fragment>

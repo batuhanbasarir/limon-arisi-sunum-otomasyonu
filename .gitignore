@@ -1,0 +1,23 @@
+# Sanal ortam
+.venv/
+
+# Gizli anahtarlar
+backend/.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Çalışma zamanı verisi (yüklenen/oluşturulan dosyalar)
+data/uploads/*
+data/output/*
+!data/uploads/.gitkeep
+!data/output/.gitkeep
+
+# Orijinal müşteri örnek sunumları (büyük, özel dosyalar — repoya dahil edilmiyor)
+*.pptm
+
+# Editör/OS
+.vs/
+.vscode/
+Thumbs.db

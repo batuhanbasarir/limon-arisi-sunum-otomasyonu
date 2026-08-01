@@ -1,0 +1,236 @@
+:root {
+  --fg: #24242a;
+  --bg: #fffdf5;
+  --panel-bg: #ffffff;
+  --border: #e7dfc0;
+  --accent: #FDE000;
+  --accent-dark: #c9b400;
+  --accent-fg: #24242a;
+  --danger: #c0392b;
+  --danger-bg: #fdecea;
+  --success: #1e7e34;
+  --success-bg: #e9f7ef;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  background-image: radial-gradient(circle at 100% 0%, rgba(253, 224, 0, 0.18), transparent 45%);
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(90deg, var(--accent) 0%, #fff6c2 100%);
+  border-bottom: 3px solid var(--accent-dark);
+}
+
+.topbar-logo {
+  height: 40px;
+  width: auto;
+  border-radius: 6px;
+  background: #fff;
+  padding: 4px;
+}
+
+.topbar h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: #2a2a1a;
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  position: relative;
+}
+
+main::before {
+  content: "";
+  position: fixed;
+  right: -60px;
+  bottom: -60px;
+  width: 420px;
+  height: 420px;
+  background: url("/brand-assets/limon_arisi_logo.png") no-repeat center / contain;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.banner {
+  max-width: 760px;
+  margin: 1rem auto 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.banner.error { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+.banner.success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+.banner.info { background: #fff8d6; color: #6b5900; border: 1px solid var(--accent-dark); }
+
+.panel {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex: 1;
+  min-width: 140px;
+}
+
+select, input, textarea {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fffef9;
+  color: inherit;
+  font: inherit;
+}
+
+.item-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--panel-bg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.item-card h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-card h3 button {
+  font-size: 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.15s, background 0.15s;
+  color: #6b6b60;
+}
+
+.dropzone.dragover { border-color: var(--accent-dark); background: #fffbe0; }
+.dropzone.filled { cursor: default; padding: 0.75rem; }
+
+.preview-row {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.preview-row img {
+  max-width: 45%;
+  max-height: 160px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.preview-row video {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 6px;
+}
+
+.change-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--accent-dark);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.change-link + .change-link {
+  margin-left: 1rem;
+}
+
+.caption-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+textarea { width: 100%; min-height: 90px; resize: vertical; }
+
+.ai-btn {
+  align-self: flex-start;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent-dark);
+  background: #fff9d6;
+  color: #6b5900;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.ai-btn:disabled { opacity: 0.5; cursor: default; }
+
+button.secondary {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: inherit;
+  cursor: pointer;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#generate {
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(201, 180, 0, 0.4);
+}
+
+#generate:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
+
+#status { font-size: 0.85rem; opacity: 0.8; }
