@@ -9,9 +9,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.6
-      # Aşağıdaki üçü Render dashboard'unda "Environment" sekmesinden elle
+      # Aşağıdaki dördü Render dashboard'unda "Environment" sekmesinden elle
       # girilir (sync: false -> repoya/commit'e yazılmaz, gizli kalır).
-      - key: ANTHROPIC_API_KEY
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_CAPTION_MODEL
         sync: false
       - key: APP_USERNAME
         sync: false

@@ -27,9 +27,9 @@ Erişun, Nudo, Miluni, and others.
 python -m venv .venv
 .\.venv\Scripts\pip install -r backend\requirements.txt
 
-# AI captions need an Anthropic API key
+# AI captions need an OpenAI API key
 copy backend\.env.example backend\.env
-# then edit backend\.env and set ANTHROPIC_API_KEY=sk-ant-...
+# then edit backend\.env and set OPENAI_API_KEY=sk-...
 
 .\.venv\Scripts\python -m uvicorn app.main:app --app-dir backend --port 8000
 ```
@@ -58,7 +58,7 @@ Herkes evden bağlanacaksa app'i [Render](https://render.com)'ın ücretsiz
      - Build command: `pip install -r backend/requirements.txt`
      - Start command: `uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT`
 3. **Environment** sekmesinden şu değişkenleri girin:
-   - `ANTHROPIC_API_KEY` — AI caption için.
+   - `OPENAI_API_KEY` — AI caption için.
    - `APP_USERNAME`, `APP_PASSWORD` — ikisi de doluysa siteye girerken ortak
      kullanıcı adı/şifre sorulur (linki bulan herkesin API'yi ücretsiz
      kullanmasını engeller). Ekibe bu ikisini paylaşın.

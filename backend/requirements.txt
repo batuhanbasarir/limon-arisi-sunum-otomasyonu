@@ -5,6 +5,6 @@ python-pptx
 lxml
 Pillow
 imageio-ffmpeg
-anthropic
+openai
 pydantic
 python-dotenv

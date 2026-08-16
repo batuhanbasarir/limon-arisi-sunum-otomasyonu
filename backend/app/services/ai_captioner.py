@@ -1,4 +1,4 @@
-"""Claude vision ile, markanın kendi caption üslubunu (brand.json'daki
+"""GPT (OpenAI) vision ile, markanın kendi caption üslubunu (brand.json'daki
 few-shot örnekler) taklit eden açıklama + hashtag metni üretir."""
 import base64
 import json
@@ -6,12 +6,12 @@ import mimetypes
 import os
 from pathlib import Path
 
-import anthropic
+import openai
 
 TEMPLATES_DIR = Path(__file__).resolve().parents[3] / "templates"
-DEFAULT_MODEL = os.environ.get("ANTHROPIC_CAPTION_MODEL", "claude-opus-5")
+DEFAULT_MODEL = os.environ.get("OPENAI_CAPTION_MODEL", "gpt-4o-mini")
 
-_MAX_IMAGE_BYTES = 4_500_000  # Anthropic API görsel boyut sınırına güvenli pay
+_MAX_IMAGE_BYTES = 15_000_000  # OpenAI görsel boyut sınırına güvenli pay
 
 
 def _load_brand(brand_id: str) -> dict:
@@ -35,20 +35,17 @@ def _image_block(path: Path) -> dict:
         data = buf.getvalue()
         media_type = "image/png" if fmt == "PNG" else "image/jpeg"
 
+    b64 = base64.standard_b64encode(data).decode("utf-8")
     return {
-        "type": "image",
-        "source": {
-            "type": "base64",
-            "media_type": media_type,
-            "data": base64.standard_b64encode(data).decode("utf-8"),
-        },
+        "type": "image_url",
+        "image_url": {"url": f"data:{media_type};base64,{b64}"},
     }
 
 
 def generate_caption(brand_id: str, image_paths: list[Path]) -> str:
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    if not os.environ.get("OPENAI_API_KEY"):
         raise RuntimeError(
-            "ANTHROPIC_API_KEY tanımlı değil. backend/.env dosyasına ekleyip sunucuyu yeniden başlatın."
+            "OPENAI_API_KEY tanımlı değil. backend/.env dosyasına ekleyip sunucuyu yeniden başlatın."
         )
 
     brand = _load_brand(brand_id)
@@ -70,32 +67,35 @@ def generate_caption(brand_id: str, image_paths: list[Path]) -> str:
         "text": "Bu görsel(ler) için markanın üslubunda bir açıklama + hashtag metni yaz.",
     })
 
-    client = anthropic.Anthropic()
+    client = openai.OpenAI()
     try:
-        response = client.messages.create(
+        response = client.chat.completions.create(
             model=DEFAULT_MODEL,
             max_tokens=500,
-            system=system_prompt,
-            messages=[{"role": "user", "content": content}],
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": content},
+            ],
         )
-    except anthropic.AuthenticationError:
-        raise RuntimeError("ANTHROPIC_API_KEY geçersiz. backend/.env dosyasındaki anahtarı kontrol edin.")
-    except anthropic.PermissionDeniedError:
+    except openai.AuthenticationError:
+        raise RuntimeError("OPENAI_API_KEY geçersiz. backend/.env dosyasındaki anahtarı kontrol edin.")
+    except openai.PermissionDeniedError:
         raise RuntimeError("API anahtarının bu işlem için izni yok.")
-    except anthropic.BadRequestError as exc:
+    except openai.BadRequestError as exc:
+        raise RuntimeError(f"AI isteği reddedildi: {exc}")
+    except openai.RateLimitError as exc:
         message = str(exc)
-        if "credit balance" in message.lower():
+        if "quota" in message.lower() or "insufficient_quota" in message.lower():
             raise RuntimeError(
-                "Anthropic hesabınızda kredi bakiyesi yetersiz. "
-                "console.anthropic.com üzerinden Plans & Billing bölümünden kredi yükleyin."
+                "OpenAI hesabınızda kredi bakiyesi yetersiz. "
+                "platform.openai.com üzerinden Billing bölümünden kredi yükleyin."
             )
-        raise RuntimeError(f"AI isteği reddedildi: {message}")
-    except anthropic.RateLimitError:
-        raise RuntimeError("Anthropic API hız sınırına takıldı, birazdan tekrar deneyin.")
-    except anthropic.APIConnectionError:
-        raise RuntimeError("Anthropic API'ye bağlanılamadı. İnternet bağlantınızı kontrol edin.")
+        raise RuntimeError("OpenAI API hız sınırına takıldı, birazdan tekrar deneyin.")
+    except openai.APIConnectionError:
+        raise RuntimeError("OpenAI API'ye bağlanılamadı. İnternet bağlantınızı kontrol edin.")
 
-    if response.stop_reason == "refusal":
+    choice = response.choices[0]
+    if choice.finish_reason == "content_filter":
         raise RuntimeError("AI içerik üretimini reddetti, lütfen elle yazın.")
 
-    return "".join(block.text for block in response.content if block.type == "text").strip()
+    return (choice.message.content or "").strip()
