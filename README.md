@@ -47,6 +47,27 @@ frontend/                       drag-and-drop UI
 data/uploads, data/output       runtime scratch space (gitignored)
 ```
 
+## Ekibe paylaşma (ücretsiz, uzaktan erişim)
+
+Herkes evden bağlanacaksa app'i [Render](https://render.com)'ın ücretsiz
+"Web Service" katmanında barındırabilirsiniz (kredi kartı gerekmez).
+
+1. render.com'da GitHub hesabınızla giriş yapın, bu repoyu (`limon-arisi-sunum-otomasyonu`) seçin.
+2. **New > Blueprint** ile devam edin — repodaki `render.yaml` build/start komutlarını otomatik okur (plan: `free`).
+   - Blueprint görünmüyorsa **New > Web Service** ile manuel kurun:
+     - Build command: `pip install -r backend/requirements.txt`
+     - Start command: `uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT`
+3. **Environment** sekmesinden şu değişkenleri girin:
+   - `ANTHROPIC_API_KEY` — AI caption için.
+   - `APP_USERNAME`, `APP_PASSWORD` — ikisi de doluysa siteye girerken ortak
+     kullanıcı adı/şifre sorulur (linki bulan herkesin API'yi ücretsiz
+     kullanmasını engeller). Ekibe bu ikisini paylaşın.
+4. Deploy edin. Render size `https://limon-arisi-sunum.onrender.com` gibi bir
+   URL verir, o linki ekiple paylaşmanız yeterli.
+
+Not: ücretsiz katman ~15 dakika kullanılmayınca uyur; bir sonraki istekte
+sunucunun uyanması 30-50 saniye sürebilir, sonrası normal hızda çalışır.
+
 ## Adding a brand
 
 Add a new `templates/<brand_id>/brand.json`:

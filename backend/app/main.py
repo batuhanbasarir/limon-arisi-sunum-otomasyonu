@@ -3,7 +3,10 @@
 Kapsam: marka seçimi + görsel(1-2)/video yüklenen içerik öğeleri + elle
 yazılan veya AI ile üretilen caption'lar -> tek bir .pptx üretimi.
 """
+import base64
 import json
+import os
+import secrets
 import tempfile
 import traceback
 from pathlib import Path
@@ -11,8 +14,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(PROJECT_ROOT / "backend" / ".env")
@@ -21,6 +25,40 @@ from app.services.deck_builder import ContentItem, build_deck, save_deck, TEMPLA
 from app.services import media_inspector, ai_captioner
 
 app = FastAPI(title="Limon Arısı Sunum Otomasyonu")
+
+APP_USERNAME = os.getenv("APP_USERNAME")
+APP_PASSWORD = os.getenv("APP_PASSWORD")
+
+
+class BasicAuthMiddleware(BaseHTTPMiddleware):
+    """APP_USERNAME/APP_PASSWORD ayarlıysa tüm siteyi ortak bir şifre arkasına
+    kilitler (paylaşılan bir sunucuda barındırırken API bütçesini korumak
+    için). İkisi de boşsa (yerel geliştirme) auth devre dışı kalır."""
+
+    async def dispatch(self, request, call_next):
+        if not APP_USERNAME or not APP_PASSWORD:
+            return await call_next(request)
+
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.lower().startswith("basic "):
+            try:
+                decoded = base64.b64decode(auth_header[6:]).decode("utf-8")
+                username, _, password = decoded.partition(":")
+            except Exception:
+                username, password = "", ""
+            if secrets.compare_digest(username, APP_USERNAME) and secrets.compare_digest(
+                password, APP_PASSWORD
+            ):
+                return await call_next(request)
+
+        return Response(
+            status_code=401,
+            # realm ASCII olmali: WWW-Authenticate header'i latin-1 ile encode edilir.
+            headers={"WWW-Authenticate": 'Basic realm="Limon Arisi"'},
+        )
+
+
+app.add_middleware(BasicAuthMiddleware)
 
 app.add_middleware(
     CORSMiddleware,

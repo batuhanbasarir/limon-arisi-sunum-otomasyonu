@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: limon-arisi-sunum
+    env: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      # Aşağıdaki üçü Render dashboard'unda "Environment" sekmesinden elle
+      # girilir (sync: false -> repoya/commit'e yazılmaz, gizli kalır).
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: APP_USERNAME
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
