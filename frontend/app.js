@@ -60,6 +60,15 @@ function addItem() {
     <div class="caption-row">
       <textarea placeholder="Açıklama + hashtag... (veya AI ile oluştur)" data-caption></textarea>
       <button type="button" class="ai-btn" data-ai-btn>✨ AI ile Oluştur</button>
+      <div class="revise-row">
+        <button type="button" class="revise-btn" data-revise="Aynı anlamı koruyarak daha kısa yaz.">Daha Kısa</button>
+        <button type="button" class="revise-btn" data-revise="Daha resmi ve kurumsal bir dille yeniden yaz.">Daha Resmi</button>
+        <button type="button" class="revise-btn" data-revise="Daha esprili, şakacı bir dille yeniden yaz.">Daha Esprili</button>
+      </div>
+      <div class="revise-row">
+        <input type="text" placeholder="Kendi revize talimatını yaz (örn. 'emoji azalt')..." data-revise-input />
+        <button type="button" class="revise-btn revise-btn-custom" data-revise-custom>Revize Et</button>
+      </div>
     </div>
   `;
   itemsEl.appendChild(card);
@@ -92,6 +101,28 @@ function addItem() {
   });
 
   aiBtn.addEventListener("click", () => generateAiCaption(id, card));
+
+  card.querySelectorAll("[data-revise]").forEach((btn) => {
+    btn.addEventListener("click", () => reviseCaption(id, card, btn.dataset.revise, btn));
+  });
+
+  const reviseInput = card.querySelector("[data-revise-input]");
+  const reviseCustomBtn = card.querySelector("[data-revise-custom]");
+  const triggerCustomRevise = () => {
+    const instruction = reviseInput.value.trim();
+    if (!instruction) {
+      showBanner("error", "Önce bir revize talimatı yaz.");
+      return;
+    }
+    reviseCaption(id, card, instruction, reviseCustomBtn);
+  };
+  reviseCustomBtn.addEventListener("click", triggerCustomRevise);
+  reviseInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      triggerCustomRevise();
+    }
+  });
 }
 
 function handleFiles(id, dropzone, fileList) {
@@ -208,6 +239,48 @@ async function generateAiCaption(id, card) {
   } finally {
     aiBtn.disabled = false;
     aiBtn.textContent = "✨ AI ile Oluştur";
+  }
+}
+
+async function reviseCaption(id, card, instruction, triggerBtn) {
+  const captionEl = card.querySelector("[data-caption]");
+  const allReviseBtns = card.querySelectorAll(".revise-btn");
+
+  if (!captionEl.value.trim()) {
+    showBanner("error", `İçerik ${id}: revize edilecek bir açıklama yok. Önce yazın veya AI ile üretin.`);
+    return;
+  }
+  if (!brandEl.value) {
+    showBanner("error", "Önce bir marka seçin.");
+    return;
+  }
+
+  allReviseBtns.forEach((b) => (b.disabled = true));
+  const originalText = triggerBtn.textContent;
+  triggerBtn.textContent = "Revize ediliyor...";
+  hideBanner();
+
+  try {
+    const formData = new FormData();
+    formData.append("brand", brandEl.value);
+    formData.append("caption", captionEl.value);
+    formData.append("instruction", instruction);
+
+    const res = await fetch("/api/revise-caption", { method: "POST", body: formData });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Sunucu hatası (${res.status})`);
+    }
+    const data = await res.json();
+    captionEl.value = data.caption;
+
+    const reviseInput = card.querySelector("[data-revise-input]");
+    if (reviseInput) reviseInput.value = "";
+  } catch (e) {
+    showBanner("error", `Revize edilemedi: ${e.message}`);
+  } finally {
+    allReviseBtns.forEach((b) => (b.disabled = false));
+    triggerBtn.textContent = originalText;
   }
 }
 

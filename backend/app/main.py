@@ -140,6 +140,21 @@ async def caption(brand: str = Form(...), file: UploadFile = File(...)):
                 pass
 
 
+@app.post("/api/revise-caption")
+async def revise_caption(
+    brand: str = Form(...),
+    caption: str = Form(...),
+    instruction: str = Form(...),
+):
+    try:
+        text = ai_captioner.revise_caption(brand, caption, instruction)
+    except RuntimeError as exc:
+        raise HTTPException(400, str(exc))
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+    return {"caption": text}
+
+
 @app.post("/api/assemble")
 async def assemble(
     brand: str = Form(...),

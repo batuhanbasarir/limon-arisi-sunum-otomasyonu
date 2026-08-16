@@ -42,40 +42,18 @@ def _image_block(path: Path) -> dict:
     }
 
 
-def generate_caption(brand_id: str, image_paths: list[Path]) -> str:
+def _call_chat(messages: list[dict]) -> str:
     if not os.environ.get("OPENAI_API_KEY"):
         raise RuntimeError(
             "OPENAI_API_KEY tanımlı değil. backend/.env dosyasına ekleyip sunucuyu yeniden başlatın."
         )
-
-    brand = _load_brand(brand_id)
-    examples = brand.get("caption_examples", [])
-
-    system_prompt = (
-        f"Sen Limon Arısı reklam ajansının sosyal medya metin yazarısın. "
-        f"{brand['display_name']} markası için, verilen görsel(ler)e bakarak Instagram/TikTok tarzında "
-        "kısa bir açıklama + hashtag bloğu yazacaksın. Markanın önceki gönderilerinden örnekler:\n\n"
-        + "\n---\n".join(examples)
-        + "\n\nYeni açıklama bu örneklerle AYNI üslupta olmalı: kısa, samimi, emoji kullanan, "
-        "ardından boş satır(lar) ve #hashtag bloğu. Sadece açıklama metnini döndür, başka hiçbir "
-        "açıklama, başlık veya tırnak işareti ekleme."
-    )
-
-    content = [_image_block(p) for p in image_paths]
-    content.append({
-        "type": "text",
-        "text": "Bu görsel(ler) için markanın üslubunda bir açıklama + hashtag metni yaz.",
-    })
 
     client = openai.OpenAI()
     try:
         response = client.chat.completions.create(
             model=DEFAULT_MODEL,
             max_tokens=500,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": content},
-            ],
+            messages=messages,
         )
     except openai.AuthenticationError:
         raise RuntimeError("OPENAI_API_KEY geçersiz. backend/.env dosyasındaki anahtarı kontrol edin.")
@@ -99,3 +77,57 @@ def generate_caption(brand_id: str, image_paths: list[Path]) -> str:
         raise RuntimeError("AI içerik üretimini reddetti, lütfen elle yazın.")
 
     return (choice.message.content or "").strip()
+
+
+def _brand_voice_prompt(brand: dict) -> str:
+    examples = brand.get("caption_examples", [])
+    return (
+        f"Sen Limon Arısı reklam ajansının sosyal medya metin yazarısın. "
+        f"{brand['display_name']} markası için Instagram/TikTok tarzında kısa açıklama + hashtag "
+        "bloğu yazıyorsun. Markanın önceki gönderilerinden örnekler:\n\n"
+        + "\n---\n".join(examples)
+        + "\n\nÜretilen/güncellenen metin bu örneklerle AYNI üslupta olmalı. Sadece açıklama "
+        "metnini döndür, başka hiçbir açıklama, başlık veya tırnak işareti ekleme."
+    )
+
+
+def generate_caption(brand_id: str, image_paths: list[Path]) -> str:
+    brand = _load_brand(brand_id)
+    system_prompt = (
+        _brand_voice_prompt(brand)
+        + "\n\nVerilen görsel(ler)e bakarak bu üslupta, kısa, samimi, emoji kullanan, ardından "
+        "boş satır(lar) ve #hashtag bloğu içeren yeni bir açıklama yaz."
+    )
+
+    content = [_image_block(p) for p in image_paths]
+    content.append({
+        "type": "text",
+        "text": "Bu görsel(ler) için markanın üslubunda bir açıklama + hashtag metni yaz.",
+    })
+
+    return _call_chat([
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": content},
+    ])
+
+
+def revise_caption(brand_id: str, caption: str, instruction: str) -> str:
+    """Var olan bir caption'ı, verilen talimata göre (daha kısa/resmi/esprili ya da
+    serbest metin) markanın üslubunu koruyarak yeniden yazar."""
+    if not caption.strip():
+        raise ValueError("Revize edilecek bir açıklama yok. Önce bir açıklama yazın veya AI ile üretin.")
+    if not instruction.strip():
+        raise ValueError("Revize talimatı boş olamaz.")
+
+    brand = _load_brand(brand_id)
+    system_prompt = (
+        _brand_voice_prompt(brand)
+        + "\n\nSana mevcut bir açıklama ve bir revize talimatı verilecek. Açıklamayı, marka "
+        "üslubunu koruyarak talimata göre yeniden yaz."
+    )
+    user_prompt = f"Mevcut açıklama:\n{caption}\n\nRevize talimatı: {instruction}"
+
+    return _call_chat([
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ])
