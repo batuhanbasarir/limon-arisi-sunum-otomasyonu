@@ -39,6 +39,11 @@ class BasicAuthMiddleware(BaseHTTPMiddleware):
         if not APP_USERNAME or not APP_PASSWORD:
             return await call_next(request)
 
+        # Uptime-ping servisleri (Render'i uyanik tutmak icin) kimlik
+        # bilgisi gonderemez; sadece bu hafif endpoint'i auth'suz birak.
+        if request.url.path == "/healthz":
+            return await call_next(request)
+
         auth_header = request.headers.get("authorization", "")
         if auth_header.lower().startswith("basic "):
             try:
@@ -75,6 +80,12 @@ UPLOAD_TMP_DIR = PROJECT_ROOT / "data" / "uploads"
 async def unhandled_exception_handler(request, exc):
     traceback.print_exc()
     return JSONResponse(status_code=500, content={"detail": f"Sunucu hatası: {exc}"})
+
+
+@app.get("/healthz")
+def healthz():
+    """Uptime-ping servisleri icin: sadece hizli 200 doner, agir is yapmaz."""
+    return {"status": "ok"}
 
 
 @app.get("/api/brands")

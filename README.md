@@ -65,8 +65,20 @@ Herkes evden bağlanacaksa app'i [Render](https://render.com)'ın ücretsiz
 4. Deploy edin. Render size `https://limon-arisi-sunum.onrender.com` gibi bir
    URL verir, o linki ekiple paylaşmanız yeterli.
 
-Not: ücretsiz katman ~15 dakika kullanılmayınca uyur; bir sonraki istekte
-sunucunun uyanması 30-50 saniye sürebilir, sonrası normal hızda çalışır.
+### Uyumasını engelleme (isteğe bağlı ama önerilir)
+
+Render'ın ücretsiz katmanı ~15 dakika kullanılmayınca uyur (sonraki istek
+30-50 sn sürer). Bunu bedava çözmek için dışarıdan bir "uptime ping"
+servisiyle her ~10 dakikada bir siteyi uyanık tutabilirsiniz:
+
+1. [UptimeRobot](https://uptimerobot.com) veya [cron-job.org](https://cron-job.org)'da
+   ücretsiz hesap açın (kredi kartı istemez).
+2. Yeni bir "HTTP(S) monitor" oluşturup şu adresi 5-10 dakikada bir
+   ping'lemesini ayarlayın: `https://<render-url>/healthz`
+   (bu endpoint şifre sormaz, sadece hızlı `200 OK` döner — auth'lu diğer
+   sayfaları değil, sadece bunu hedefleyin).
+
+Bu sayede site pratikte hiç uyumaz, tamamen ücretsiz kalır.
 
 ## Adding a brand
 
