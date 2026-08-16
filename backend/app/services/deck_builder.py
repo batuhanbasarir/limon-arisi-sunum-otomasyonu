@@ -92,7 +92,10 @@ def _add_caption(slide, text: str, box_name: str):
     tf = box.text_frame
     tf.word_wrap = True
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    lines = text.split("\n")
+    # Tarayıcılar <textarea> içeriğini form gönderirken \n'i \r\n'e çevirir
+    # (HTML spec). Normalize etmezsek her satırın sonunda kalan \r karakteri
+    # PowerPoint XML'inde literal "_x000D_" olarak görünür.
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     tf.paragraphs[0].text = lines[0]
     tf.paragraphs[0].runs[0].font.size = Pt(18)
     for line in lines[1:]:
