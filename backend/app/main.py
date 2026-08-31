@@ -150,10 +150,19 @@ UPLOAD_TMP_DIR = PROJECT_ROOT / "data" / "uploads"
 UPLOAD_CHUNK_SIZE = 1024 * 1024  # 1 MB
 # Render'in ucretsiz katmani 512MB RAM ile sinirli, ve python-pptx her
 # add_movie() cagrisinda videonun TAMAMINI bellege okuyup save() cagrilana
-# kadar tutuyor (yani birden fazla video ayni anda RAM'de). Toplam video
-# boyutu buyukse sunucu sessizce cokup "Failed to fetch" vermek yerine,
-# kontrollu ve anlasilir bir hatayla reddediyoruz.
-MAX_VIDEO_TOTAL_MB = int(os.environ.get("MAX_VIDEO_TOTAL_MB", "80"))
+# kadar tutuyor (yani birden fazla video ayni anda RAM'de). Bu yuzden
+# videolar pptx'e gomulmeden once sikistiriliyor (bkz. media_inspector.
+# compress_video) - tipik bir telefon cekimi 10-20 kat kuculuyor. Sikistirma
+# sonrasi toplam boyut yine de asilirsa, sunucu sessizce cokup
+# "Failed to fetch" vermek yerine kontrollu ve anlasilir bir hata donuyoruz.
+MAX_VIDEO_TOTAL_MB = int(os.environ.get("MAX_VIDEO_TOTAL_MB", "150"))
+# Sikistirma islemi ham dosyayi ffmpeg ile okuyup baştan yazdigi icin, cok
+# devasa bir ham video (orn. yanlislikla yuklenmis bir film) sunucuyu uzun
+# sure mesgul etmesin diye ayrica bir ham boyut siniri var.
+MAX_RAW_VIDEO_MB_PER_FILE = int(os.environ.get("MAX_RAW_VIDEO_MB_PER_FILE", "500"))
+# Bunun altindaki videolar zaten kucuk, sikistirmaya (ve onun getirdigi
+# islem suresine) gerek yok.
+COMPRESS_VIDEO_THRESHOLD_MB = 8
 
 
 async def _save_upload_streaming(upload: UploadFile, dest_dir: Path, suffix: str) -> Path:
@@ -283,6 +292,23 @@ async def assemble(
 
             if kind == "video":
                 video_path = item_files[0]
+                raw_mb = video_path.stat().st_size / 1024 / 1024
+                if raw_mb > MAX_RAW_VIDEO_MB_PER_FILE:
+                    raise HTTPException(
+                        400,
+                        f"İçerik {i + 1}: video dosyası çok büyük ({raw_mb:.0f} MB). "
+                        f"En fazla {MAX_RAW_VIDEO_MB_PER_FILE} MB olabilir.",
+                    )
+
+                if raw_mb > COMPRESS_VIDEO_THRESHOLD_MB:
+                    compressed_path = video_path.with_suffix(".compressed.mp4")
+                    try:
+                        media_inspector.compress_video(video_path, compressed_path)
+                    except Exception as exc:
+                        raise HTTPException(400, f"İçerik {i + 1}: video sıkıştırılamadı ({exc})")
+                    tmp_paths.append(compressed_path)
+                    video_path = compressed_path
+
                 poster_path = video_path.with_suffix(".poster.jpg")
                 try:
                     media_inspector.extract_poster_frame(video_path, poster_path)
@@ -299,6 +325,8 @@ async def assemble(
                     caption=caption, image_paths=[str(p) for p in item_files]
                 ))
 
+        # NOT: video_path'ler bu noktada zaten sikistirilmis (yukarida), yani
+        # bu toplam ham yukleme boyutu degil, pptx'e gomulecek gercek boyut.
         total_video_bytes = sum(
             Path(item.video_path).stat().st_size for item in items if item.video_path
         )
@@ -306,10 +334,11 @@ async def assemble(
         if total_video_bytes > max_video_bytes:
             raise HTTPException(
                 400,
-                f"Toplam video boyutu çok büyük ({total_video_bytes / 1024 / 1024:.0f} MB). "
-                f"Ücretsiz sunucumuzun bellek sınırı nedeniyle toplam video boyutu en fazla "
-                f"~{MAX_VIDEO_TOTAL_MB} MB olabilir — video sayısını azaltın ya da daha küçük "
-                f"videolar kullanın, yoksa sunum oluşturma sırasında sunucu çöküp yarım kalır.",
+                f"Videolar sıkıştırıldıktan sonra bile toplam boyut çok büyük "
+                f"({total_video_bytes / 1024 / 1024:.0f} MB, sınır ~{MAX_VIDEO_TOTAL_MB} MB). "
+                f"Muhtemelen çok sayıda uzun video var — bu sunumdaki video sayısını "
+                f"azaltıp tekrar deneyin, yoksa sunum oluşturma sırasında sunucu çöküp "
+                f"yarım kalır.",
             )
 
         try:

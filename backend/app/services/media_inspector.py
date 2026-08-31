@@ -20,6 +20,40 @@ def _ffmpeg_exe() -> str:
     return imageio_ffmpeg.get_ffmpeg_exe()
 
 
+def compress_video(
+    src: Path,
+    dst: Path,
+    *,
+    max_dim: int = 1080,
+    video_bitrate_kbps: int = 2000,
+    audio_bitrate_kbps: int = 128,
+) -> None:
+    """Videoyu .pptx'e gömmeden önce küçültür: uzun kenarı `max_dim` piksele,
+    bit hızını `video_bitrate_kbps`'e sabitler. python-pptx add_movie()
+    dosyanın TAMAMINI belleğe okuyup save() çağrılana kadar tuttuğu için, bu
+    adım hem sunucudaki RAM kullanımını hem de nihai .pptx dosya boyutunu
+    büyük ölçüde azaltır (tipik telefon çekimi 15-50 Mbps iken burada ~2
+    Mbps'e iniyor — inceleme sunumu için yeterli kalitede kalır)."""
+    scale = (
+        f"scale='if(gt(iw,ih),min({max_dim},iw),-2)':"
+        f"'if(gt(iw,ih),-2,min({max_dim},ih))'"
+    )
+    subprocess.run(
+        [
+            _ffmpeg_exe(), "-y", "-i", str(src),
+            "-vf", scale,
+            "-c:v", "libx264", "-preset", "veryfast",
+            "-b:v", f"{video_bitrate_kbps}k",
+            "-maxrate", f"{video_bitrate_kbps}k",
+            "-bufsize", f"{video_bitrate_kbps * 2}k",
+            "-c:a", "aac", "-b:a", f"{audio_bitrate_kbps}k",
+            "-movflags", "+faststart",
+            str(dst),
+        ],
+        check=True, capture_output=True, timeout=300,
+    )
+
+
 def extract_poster_frame(video_path: Path, out_path: Path, at_seconds: float = 0.1):
     """pptx içine gömülecek poster (kapak) kareyi çıkarır."""
     subprocess.run(
