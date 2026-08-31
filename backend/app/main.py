@@ -147,6 +147,28 @@ app.add_middleware(
 OUTPUT_DIR = PROJECT_ROOT / "data" / "output"
 UPLOAD_TMP_DIR = PROJECT_ROOT / "data" / "uploads"
 
+UPLOAD_CHUNK_SIZE = 1024 * 1024  # 1 MB
+# Render'in ucretsiz katmani 512MB RAM ile sinirli, ve python-pptx her
+# add_movie() cagrisinda videonun TAMAMINI bellege okuyup save() cagrilana
+# kadar tutuyor (yani birden fazla video ayni anda RAM'de). Toplam video
+# boyutu buyukse sunucu sessizce cokup "Failed to fetch" vermek yerine,
+# kontrollu ve anlasilir bir hatayla reddediyoruz.
+MAX_VIDEO_TOTAL_MB = int(os.environ.get("MAX_VIDEO_TOTAL_MB", "80"))
+
+
+async def _save_upload_streaming(upload: UploadFile, dest_dir: Path, suffix: str) -> Path:
+    """Yuklenen dosyayi tek seferde tamamen bellege okumadan (await
+    upload.read() gibi), parca parca diske yazar. Ozellikle buyuk
+    videolarda bellek kullanimini onemli olcude azaltir."""
+    with tempfile.NamedTemporaryFile(dir=dest_dir, suffix=suffix, delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+        while True:
+            chunk = await upload.read(UPLOAD_CHUNK_SIZE)
+            if not chunk:
+                break
+            tmp.write(chunk)
+    return tmp_path
+
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request, exc):
@@ -177,9 +199,7 @@ def list_brands():
 async def caption(brand: str = Form(...), file: UploadFile = File(...)):
     UPLOAD_TMP_DIR.mkdir(parents=True, exist_ok=True)
     suffix = Path(file.filename or "").suffix or ".jpg"
-    with tempfile.NamedTemporaryFile(dir=UPLOAD_TMP_DIR, suffix=suffix, delete=False) as tmp:
-        tmp.write(await file.read())
-        tmp_path = Path(tmp.name)
+    tmp_path = await _save_upload_streaming(file, UPLOAD_TMP_DIR, suffix)
 
     frame_paths: list[Path] = []
     try:
@@ -251,11 +271,7 @@ async def assemble(
     try:
         for idx, upload in zip(file_item_index, files):
             suffix = Path(upload.filename or "").suffix or ".png"
-            with tempfile.NamedTemporaryFile(
-                dir=UPLOAD_TMP_DIR, suffix=suffix, delete=False
-            ) as tmp:
-                tmp.write(await upload.read())
-                tmp_path = Path(tmp.name)
+            tmp_path = await _save_upload_streaming(upload, UPLOAD_TMP_DIR, suffix)
             tmp_paths.append(tmp_path)
             files_by_item.setdefault(idx, []).append(tmp_path)
 
@@ -282,6 +298,19 @@ async def assemble(
                 items.append(ContentItem(
                     caption=caption, image_paths=[str(p) for p in item_files]
                 ))
+
+        total_video_bytes = sum(
+            Path(item.video_path).stat().st_size for item in items if item.video_path
+        )
+        max_video_bytes = MAX_VIDEO_TOTAL_MB * 1024 * 1024
+        if total_video_bytes > max_video_bytes:
+            raise HTTPException(
+                400,
+                f"Toplam video boyutu çok büyük ({total_video_bytes / 1024 / 1024:.0f} MB). "
+                f"Ücretsiz sunucumuzun bellek sınırı nedeniyle toplam video boyutu en fazla "
+                f"~{MAX_VIDEO_TOTAL_MB} MB olabilir — video sayısını azaltın ya da daha küçük "
+                f"videolar kullanın, yoksa sunum oluşturma sırasında sunucu çöküp yarım kalır.",
+            )
 
         try:
             prs = build_deck(brand, items)
