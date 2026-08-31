@@ -61,7 +61,7 @@ def extract_poster_frame(video_path: Path, out_path: Path, at_seconds: float = 0
             _ffmpeg_exe(), "-y", "-ss", str(at_seconds), "-i", str(video_path),
             "-vframes", "1", str(out_path),
         ],
-        check=True, capture_output=True,
+        check=True, capture_output=True, timeout=60,
     )
 
 
@@ -70,7 +70,7 @@ def _probe_duration(video_path: Path) -> float:
         [
             _ffmpeg_exe(), "-i", str(video_path),
         ],
-        capture_output=True, text=True,
+        capture_output=True, text=True, timeout=60,
     )
     # ffmpeg (ffprobe değil) sürüm bilgisini stderr'e yazar; "Duration: HH:MM:SS.xx" satırını ara.
     for line in result.stderr.splitlines():
@@ -97,7 +97,7 @@ def extract_caption_frames(video_path: Path, out_dir: Path, count: int = 4) -> l
                 _ffmpeg_exe(), "-y", "-ss", str(timestamp), "-i", str(video_path),
                 "-vframes", "1", str(out_path),
             ],
-            check=True, capture_output=True,
+            check=True, capture_output=True, timeout=60,
         )
         if out_path.exists():
             frames.append(out_path)

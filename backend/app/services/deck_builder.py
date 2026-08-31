@@ -98,7 +98,13 @@ def _add_caption(slide, text: str, box_name: str):
     # PowerPoint XML'inde literal "_x000D_" olarak görünür.
     lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     tf.paragraphs[0].text = lines[0]
-    tf.paragraphs[0].runs[0].font.size = Pt(18)
+    # Bos bir satir (orn. caption bos birakilip yine de "Sunumu Olustur"a
+    # basilirsa lines[0] == "") icin python-pptx hic run olusturmuyor -
+    # .runs bos bir TUPLE donuyor, kosulsuz [0] erisimi "tuple index out
+    # of range" ile cokuyordu (asagidaki for dongusu zaten bu kontrolu
+    # yapiyordu, ilk satir icin unutulmustu).
+    if tf.paragraphs[0].runs:
+        tf.paragraphs[0].runs[0].font.size = Pt(18)
     for line in lines[1:]:
         p = tf.add_paragraph()
         p.text = line
