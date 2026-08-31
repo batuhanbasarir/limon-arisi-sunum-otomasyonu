@@ -89,7 +89,7 @@ function addItem() {
   dropzone.addEventListener("drop", (e) => {
     e.preventDefault();
     dropzone.classList.remove("dragover");
-    handleFiles(id, dropzone, e.dataTransfer.files);
+    handleDroppedFiles(id, dropzone, e.dataTransfer.files);
   });
   fileInput.addEventListener("change", () => {
     handleFiles(id, dropzone, fileInput.files);
@@ -191,6 +191,30 @@ function renderPreview(dropzone, state) {
       addInput.click();
     });
   }
+}
+
+function handleDroppedFiles(id, dropzone, fileList) {
+  const files = [...fileList];
+  if (!files.length) return;
+
+  const videos = files.filter((f) => f.type.startsWith("video/"));
+  const images = files.filter((f) => f.type.startsWith("image/"));
+  const current = itemState.get(id);
+
+  if (!videos.length && !images.length) {
+    showBanner("error", "Desteklenmeyen dosya türü. Görsel veya video seçin.");
+    return;
+  }
+
+  // Kartta zaten 1 görsel varsa ve üzerine yeni görsel(ler) sürüklenirse,
+  // "Değiştir" gibi üzerine yazmak yerine "+ Görsel ekle" gibi yanına ekle —
+  // sürükle-bırak'ta kullanıcı doğal olarak bunu bekliyor.
+  if (!videos.length && current && current.kind === "image" && current.files.length === 1) {
+    addMoreImages(id, dropzone, images);
+    return;
+  }
+
+  handleFiles(id, dropzone, fileList);
 }
 
 function addMoreImages(id, dropzone, fileList) {
