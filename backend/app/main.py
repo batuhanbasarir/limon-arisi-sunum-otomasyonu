@@ -3,7 +3,7 @@
 Kapsam: marka seçimi + görsel(1-2)/video yüklenen içerik öğeleri + elle
 yazılan veya AI ile üretilen caption'lar -> tek bir .pptx üretimi.
 """
-import base64
+import hashlib
 import json
 import os
 import secrets
@@ -12,9 +12,9 @@ import traceback
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Form, UploadFile, File, HTTPException
+from fastapi import FastAPI, Form, Request, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -28,42 +28,114 @@ app = FastAPI(title="Limon Arısı Sunum Otomasyonu")
 
 APP_USERNAME = os.getenv("APP_USERNAME")
 APP_PASSWORD = os.getenv("APP_PASSWORD")
+SESSION_COOKIE = "la_session"
+# Dogru kullanici adi/sifre girildiginde cookie'ye yazilacak sabit deger.
+_SESSION_TOKEN = (
+    hashlib.sha256(f"{APP_USERNAME}:{APP_PASSWORD}".encode("utf-8")).hexdigest()
+    if APP_USERNAME and APP_PASSWORD
+    else None
+)
+
+LOGIN_PAGE = """<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Giriş — Limon Arısı</title>
+<style>
+  * {{ box-sizing: border-box; }}
+  body {{ margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:#fffdf5;
+    background-image: radial-gradient(circle at 100% 0%, rgba(253,224,0,0.18), transparent 45%); }}
+  .card {{ background:#fff; border:1px solid #e7dfc0; border-radius:12px; padding:2rem 2.25rem;
+    width:100%; max-width:340px; box-shadow:0 4px 20px rgba(0,0,0,0.06); }}
+  h1 {{ font-size:1.1rem; margin:0 0 1.25rem; color:#24242a; }}
+  label {{ display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.3rem; color:#24242a; }}
+  input {{ width:100%; padding:0.55rem 0.65rem; margin-bottom:1rem; border:1px solid #e7dfc0;
+    border-radius:6px; font:inherit; background:#fffef9; }}
+  button {{ width:100%; padding:0.65rem; border:none; border-radius:6px; background:#FDE000;
+    color:#24242a; font-weight:700; cursor:pointer; font-size:0.95rem; }}
+  button:hover {{ background:#e6cc00; }}
+  .error {{ background:#fdecea; color:#c0392b; border:1px solid #c0392b; border-radius:6px;
+    padding:0.6rem 0.75rem; font-size:0.85rem; font-weight:600; margin-bottom:1rem; }}
+</style></head>
+<body>
+  <form class="card" method="post" action="/login">
+    <h1>🐝 Limon Arısı — Giriş</h1>
+    {error_html}
+    <label for="u">Kullanıcı adı</label>
+    <input id="u" name="username" autocomplete="username" autofocus required>
+    <label for="p">Şifre</label>
+    <input id="p" name="password" type="password" autocomplete="current-password" required>
+    <button type="submit">Giriş Yap</button>
+  </form>
+</body></html>"""
 
 
-class BasicAuthMiddleware(BaseHTTPMiddleware):
+class SessionAuthMiddleware(BaseHTTPMiddleware):
     """APP_USERNAME/APP_PASSWORD ayarlıysa tüm siteyi ortak bir şifre arkasına
     kilitler (paylaşılan bir sunucuda barındırırken API bütçesini korumak
-    için). İkisi de boşsa (yerel geliştirme) auth devre dışı kalır."""
+    için). İkisi de boşsa (yerel geliştirme) auth devre dışı kalır.
+
+    Tarayıcı-native "Basic Auth" yerine kendi /login sayfamızı kullanıyoruz:
+    yanlış şifre girildiğinde tarayıcı o girdiyi sonsuza kadar önbelleğe
+    alıp kullanıcıya bir daha soru sormadan tekrar tekrar 401 döndürebiliyor
+    (gerçek bug, kullanıcıdan geldi). Kendi login formumuzda bu sorun yok:
+    yanlış girilirse formu net bir hatayla tekrar gösteririz."""
 
     async def dispatch(self, request, call_next):
-        if not APP_USERNAME or not APP_PASSWORD:
+        if not _SESSION_TOKEN:
             return await call_next(request)
 
-        # Uptime-ping servisleri (Render'i uyanik tutmak icin) kimlik
-        # bilgisi gonderemez; sadece bu hafif endpoint'i auth'suz birak.
-        if request.url.path == "/healthz":
+        path = request.url.path
+        # Ping servisleri ve login sayfasinin kendisi auth'suz erisilebilir olmali.
+        if path == "/healthz" or path == "/login":
             return await call_next(request)
 
-        auth_header = request.headers.get("authorization", "")
-        if auth_header.lower().startswith("basic "):
-            try:
-                decoded = base64.b64decode(auth_header[6:]).decode("utf-8")
-                username, _, password = decoded.partition(":")
-            except Exception:
-                username, password = "", ""
-            if secrets.compare_digest(username, APP_USERNAME) and secrets.compare_digest(
-                password, APP_PASSWORD
-            ):
-                return await call_next(request)
+        if secrets.compare_digest(request.cookies.get(SESSION_COOKIE, ""), _SESSION_TOKEN):
+            return await call_next(request)
 
-        return Response(
-            status_code=401,
-            # realm ASCII olmali: WWW-Authenticate header'i latin-1 ile encode edilir.
-            headers={"WWW-Authenticate": 'Basic realm="Limon Arisi"'},
+        if path.startswith("/api/"):
+            return JSONResponse(status_code=401, content={"detail": "Giriş yapmanız gerekiyor."})
+        return RedirectResponse(url="/login", status_code=302)
+
+
+@app.get("/login", response_class=HTMLResponse)
+def login_form():
+    if not _SESSION_TOKEN:
+        return RedirectResponse(url="/", status_code=302)
+    return LOGIN_PAGE.format(error_html="")
+
+
+@app.post("/login")
+def login_submit(username: str = Form(...), password: str = Form(...)):
+    if not _SESSION_TOKEN:
+        return RedirectResponse(url="/", status_code=302)
+
+    if secrets.compare_digest(username, APP_USERNAME) and secrets.compare_digest(
+        password, APP_PASSWORD
+    ):
+        resp = RedirectResponse(url="/", status_code=302)
+        resp.set_cookie(
+            key=SESSION_COOKIE,
+            value=_SESSION_TOKEN,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            max_age=60 * 60 * 24 * 30,  # 30 gün
         )
+        return resp
+
+    error_html = '<div class="error">Kullanıcı adı veya şifre yanlış. Tekrar deneyin.</div>'
+    return HTMLResponse(LOGIN_PAGE.format(error_html=error_html), status_code=401)
 
 
-app.add_middleware(BasicAuthMiddleware)
+@app.get("/logout")
+def logout():
+    resp = RedirectResponse(url="/login", status_code=302)
+    resp.delete_cookie(SESSION_COOKIE)
+    return resp
+
+
+app.add_middleware(SessionAuthMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
