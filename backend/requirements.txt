@@ -8,3 +8,4 @@ imageio-ffmpeg
 openai
 pydantic
 python-dotenv
+httpx

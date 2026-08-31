@@ -8,7 +8,9 @@ from pathlib import Path
 
 import openai
 
-TEMPLATES_DIR = Path(__file__).resolve().parents[3] / "templates"
+from ..paths import get_project_root
+
+TEMPLATES_DIR = get_project_root() / "templates"
 DEFAULT_MODEL = os.environ.get("OPENAI_CAPTION_MODEL", "gpt-4o-mini")
 
 _MAX_IMAGE_BYTES = 15_000_000  # OpenAI görsel boyut sınırına güvenli pay

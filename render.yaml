@@ -5,17 +5,23 @@ services:
     plan: free
     region: frankfurt
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT
+    # NOT: Uygulama artik masaustu (bkz. backend/app/desktop_launcher.py) —
+    # bu sunucuda sadece kucuk, OpenAI anahtarinin gizli kalmasi gereken
+    # caption servisi (cloud_app.py) calisiyor. Video/gorsel dosyalari ve
+    # .pptx uretimi tamamen kullanicinin kendi bilgisayarinda oluyor.
+    startCommand: uvicorn app.cloud_app:app --app-dir backend --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.6
-      # Aşağıdaki dördü Render dashboard'unda "Environment" sekmesinden elle
+      # Asagidaki ucu Render dashboard'unda "Environment" sekmesinden elle
       # girilir (sync: false -> repoya/commit'e yazılmaz, gizli kalır).
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_CAPTION_MODEL
         sync: false
-      - key: APP_USERNAME
-        sync: false
-      - key: APP_PASSWORD
+      # Masaustu uygulamalarinin bu servise erismek icin gonderdigi ortak
+      # anahtar (backend/app/desktop_launcher.py'nin paketlendigi .exe'ye
+      # APP_KEY ortam degiskeni olarak gomulur). Buradaki deger ile ayni
+      # olmali, yoksa masaustu istekleri 401 alir.
+      - key: APP_KEY
         sync: false

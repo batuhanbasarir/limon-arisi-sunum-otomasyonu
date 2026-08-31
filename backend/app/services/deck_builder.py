@@ -20,8 +20,9 @@ from pptx.util import Emu, Pt, Inches
 
 from . import slide_cloner
 from .pptx_repair import fix_pptx_package
+from ..paths import get_project_root
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+PROJECT_ROOT = get_project_root()
 TEMPLATES_DIR = PROJECT_ROOT / "templates"
 SHARED_DIR = TEMPLATES_DIR / "_shared"
 BADGES_DIR = SHARED_DIR / "badges"

@@ -3,6 +3,7 @@
 
 # Gizli anahtarlar
 backend/.env
+backend/app/_secrets.py
 
 # Python
 __pycache__/
@@ -21,3 +22,8 @@ data/output/*
 .vs/
 .vscode/
 Thumbs.db
+
+# PyInstaller build ciktilari (buyuk, ikili dosyalar — repoya dahil edilmiyor,
+# .exe dogrudan ekip arkadaslarina paylasilir)
+build/
+dist/
