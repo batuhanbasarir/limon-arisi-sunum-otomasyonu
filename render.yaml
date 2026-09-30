@@ -5,28 +5,26 @@ services:
     plan: free
     region: frankfurt
     buildCommand: pip install -r backend/requirements.txt
-    # NOT: Web sitesinden ("Limon Arısı uygulamaları" paneli) linklenebilecek
-    # tam bagimsiz bir web uygulamasi olarak barinir (bkz. backend/app/
-    # web_app.py) — sifreyle korunur, marka secimi + gorsel/video yukleme +
-    # AI caption + .pptx uretimi hep bu serviste olur. Masaustu .exe
-    # (backend/app/desktop_launcher.py, main.py) ve onun kucuk caption
-    # servisi (cloud_app.py) ayri, kullanilmayan bir alternatif olarak
-    # kodda duruyor - Windows'un imzasiz .exe'leri engellemesi (Smart App
-    # Control) yuzunden guvenilir dagitilamadi.
-    startCommand: uvicorn app.web_app:app --app-dir backend --host 0.0.0.0 --port $PORT
+    # NOT: Uygulama masaustu (bkz. backend/app/desktop_launcher.py, main.py) —
+    # bu sunucuda sadece kucuk, OpenAI anahtarinin gizli kalmasi gereken
+    # caption servisi (cloud_app.py) calisiyor. Video/gorsel dosyalari ve
+    # .pptx uretimi tamamen kullanicinin kendi bilgisayarinda oluyor.
+    # (web_app.py - tam bagimsiz, sifreli web surumu - web sitesi
+    # entegrasyonu icin denenmisti, o fikirden vazgecildi; kod duruyor,
+    # ileride gerekirse startCommand'i tekrar ona cevirebiliriz.)
+    startCommand: uvicorn app.cloud_app:app --app-dir backend --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.6
-      # Asagidakiler Render dashboard'unda "Environment" sekmesinden elle
+      # Asagidaki ucu Render dashboard'unda "Environment" sekmesinden elle
       # girilir (sync: false -> repoya/commit'e yazılmaz, gizli kalır).
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_CAPTION_MODEL
         sync: false
-      # Siteye girerken sorulan ortak kullanici adi/sifre (daha once
-      # limonarisi / arisilimon olarak ayarlanmisti - dashboard'da hala
-      # duruyor olmasi gerekir, degismediyse tekrar girmeye gerek yok).
-      - key: APP_USERNAME
-        sync: false
-      - key: APP_PASSWORD
+      # Masaustu uygulamalarinin bu servise erismek icin gonderdigi ortak
+      # anahtar (backend/app/_secrets.py - gitignore'lu - icinde ayni deger
+      # .exe'ye/koda gomulu). Buradaki deger ile ayni olmali, yoksa
+      # masaustu istekleri 401 alir.
+      - key: APP_KEY
         sync: false
